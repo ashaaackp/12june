@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEMORIES</title>
+    <style>
+        /* Base & Theme */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #a8c0ff, #f4c4f3);
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            padding: 40px 20px;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- HALAMAN PEMBUKA (WELCOME) --- */
+        #welcome-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #a8c0ff, #f4c4f3);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999; transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        .open-btn {
+            padding: 16px 40px; font-size: 1.1rem; font-weight: 600; color: white;
+            background: linear-gradient(45deg, #6c5ce7, #a29bfe); border: none; border-radius: 50px; cursor: pointer;
+            box-shadow: 0 10px 25px rgba(108, 92, 231, 0.4); transition: all 0.3s ease;
+        }
+        .open-btn:hover { transform: scale(1.05); box-shadow: 0 15px 30px rgba(108, 92, 231, 0.6); }
+
+        /* --- WADAH CONTAINER --- */
+        .container {
+            max-width: 700px; width: 100%; background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-radius: 30px; padding: 40px 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1); text-align: center; z-index: 10;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        h1 { color: #6c5ce7; font-size: 2.5rem; margin-bottom: 25px; font-weight: 700; letter-spacing: 2px; }
+        .ucapan { font-size: 1.05rem; line-height: 1.8; color: #444; margin-bottom: 35px; text-align: justify; }
+
+        /* --- GALERI FOTO LENGKAP --- */
+        .gallery-title { font-size: 1.2rem; font-weight: bold; color: #6c5ce7; margin-top: 10px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .gallery-subtitle { font-size: 0.85rem; color: #666; font-style: italic; margin-bottom: 20px; }
+
+        .photo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 18px; margin-bottom: 40px; }
+        .photo-grid img { 
+            width: 100%; height: 190px; object-fit: cover; border-radius: 16px; 
+            border: 6px solid #ffffff; box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .photo-grid img:hover { transform: scale(1.08) rotate(3deg); box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
+
+        /* --- PREMIUM 3D GIFT BOX --- */
+        .gift-section { margin-top: 30px; padding-top: 30px; border-top: 2px dashed rgba(108, 92, 231, 0.2); }
+        .gift-section p { font-weight: 600; color: #555; margin-bottom: 25px; }
+        
+        .gift-container {
+            position: relative; width: 100px; height: 100px; margin: 0 auto; cursor: pointer;
+        }
+        .gift-box-3d {
+            position: absolute; width: 100%; height: 100%; background: #ff4757; border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(255, 71, 87, 0.3); transition: all 0.4s ease;
+        }
+        .gift-lid {
+            position: absolute; top: -12px; left: -5%; width: 110%; height: 20px; background: #ff6b81;
+            border-radius: 4px; box-shadow: 0 4px 5px rgba(0,0,0,0.1); z-index: 5;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        /* Ribbon Lines */
+        .gift-box-3d::before, .gift-lid::before { content: ''; position: absolute; left: 50%; top: 0; width: 16px; height: 100%; background: #eccc68; transform: translateX(-50%); }
+        .gift-box-3d::after { content: ''; position: absolute; left: 0; top: 50%; width: 100%; height: 16px; background: #eccc68; transform: translateY(-50%); }
+        /* Bow Ribbon */
+        .gift-bow {
+            position: absolute; top: -26px; left: 50%; transform: translateX(-50%);
+            width: 30px; height: 15px; background: #eccc68; border-radius: 15px 15px 0 0; z-index: 6;
+            transition: all 0.4s ease;
+        }
+        /* Hover Effect */
+        .gift-container:hover .gift-lid { transform: translateY(-18px) rotate(-5deg); }
+        .gift-container:hover .gift-bow { transform: translateX(-50%) translateY(-18px); }
+        .gift-container:hover .gift-box-3d { transform: scale(1.05); }
+
+        .gift-text { font-size: 0.85rem; color: white; background: #6c5ce7; padding: 6px 14px; border-radius: 20px; margin-top: 115px; display: inline-block; font-weight: 600; }
+
+        /* --- KONTEN HALAMAN GIFT (BUKET BUNGA ESTETIK) --- */
+        #gift-page-section { display: none; opacity: 0; transition: opacity 1.2s ease; }
+
+        /* Buket Bunga Berkelas */
+        .bouquet-wrapper { position: relative; width: 280px; height: 300px; margin: 30px auto; }
+        
+        /* Vas / Pembungkus Kertas */
+        .vase {
+            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 65px solid transparent; border-right: 65px solid transparent;
+            border-bottom: 140px solid #ffeaa7; z-index: 3; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+        }
+        .vase::after {
+            content: ''; position: absolute; top: 140px; left: -25px; width: 50px; height: 12px;
+            background: #ff7675; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+        .flower-stems {
+            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 14px; height: 70px; background: #78e08f; z-index: 1; border-radius: 4px;
+        }
+
+        /* Komponen Bunga Melingkar */
+        .aesthetic-flower { position: absolute; width: 65px; height: 65px; z-index: 2; animation: floatFlower 4s ease-in-out infinite; }
+        .fl-1 { top: 20px; left: 45px; animation-delay: 0s; }
+        .fl-2 { top: -10px; left: 105px; animation-delay: 0.5s; }
+        .fl-3 { top: 20px; left: 165px; animation-delay: 1s; }
+        .fl-4 { top: 65px; left: 75px; animation-delay: 1.5s; }
+        .fl-5 { top: 65px; left: 140px; animation-delay: 2s; }
+
+        /* Kelopak Bunga Bulat Rapi */
+        .fl-petal { position: absolute; width: 30px; height: 30px; background: #ff758c; border-radius: 50%; }
+        .fl-p1 { top: 0; left: 17px; } .fl-p2 { top: 15px; left: 35px; }
+        .fl-p3 { top: 35px; left: 24px; } .fl-p4 { top: 35px; left: 8px; } .fl-p5 { top: 15px; left: 0; }
+        .fl-core { position: absolute; top: 17px; left: 17px; width: 30px; height: 30px; background: #ffd23f; border-radius: 50%; z-index: 5; box-shadow: inset 0 0 5px rgba(0,0,0,0.1); }
+
+        .fl-2 .fl-petal, .fl-4 .fl-petal { background: #fd79a8; }
+        .fl-2 .fl-core, .fl-4 .fl-core { background: #fff; }
+
+        /* Daun Estetik */
+        .leaf { position: absolute; width: 40px; height: 20px; background: #55efc4; border-radius: 0 20px; z-index: 1; }
+        .lf-1 { top: 50px; left: 25px; transform: rotate(-30deg); }
+        .lf-2 { top: 40px; right: 25px; transform: rotate(210deg); }
+
+        @keyframes floatFlower { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+        /* Efek Kelopak Berguguran */
+        .petal-fall {
+            position: absolute; background: #ff758c; border-radius: 15px 0; opacity: 0.7;
+            pointer-events: none; animation: fall linear infinite; z-index: 1;
+        }
+        @keyframes fall {
+            0% { top: -20px; transform: translateX(0) rotate(0deg); }
+            100% { top: 100vh; transform: translateX(150px) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="welcome-screen">
+        <h2>Ada Pesan Buat Kamu! 💌</h2>
+        <button class="open-btn" onclick="mulaiWeb()">Buka Sekarang ✨</button>
+    </div>
+
+    <audio id="lagu" src="juspren.mp3" loop></audio>
+
+    <div class="container">
+        
+        <div id="open-page-section">
+            <h1>HELLO ✨</h1>
+            <div class="ucapan">
+                Habede yaaa! 🥳 Meskipun udah kelewat 10 hari yang lalu, tapi <i>better late than never</i>, kan? Kemarin aku sibuk ujian banget, makanya baru bisa jabanin sekarang. Kamu kan pengen kado web, nih aku bikinin khusus buat kamu!<br><br>
+                Jujur, aku selalu kagum banget sama kamu. Makasih ya udah selalu ada dan jadi tempat pulang paling nyaman buat aku. <b>I love you and I miss you so much.</b> Semoga kamu suka sama kado kecil ini!
+            </div>
+
+            <p class="gallery-title">Let's make some memories together</p>
+            <p class="gallery-subtitle">WALAUPUN foto itu JAMET BGT YAA 😭</p>
+
+            <div class="photo-grid">
+                <img src="skl.jpeg" alt="Memory 1">
+                <img src="zrh.jpeg" alt="Memory 2">
+                <img src="mdr.jpeg" alt="Memory 3">
+                <img src="jgj.jpeg" alt="Memory 4">
+                <img src="rfr.jpeg" alt="Memory 5">
+                <img src="pdk.jpeg" alt="Memory 6">
+            </div>
+
+            <div class="gift-section">
+                <p>Coba arahin kursor/klik kotak kado di bawah ini: ✨</p>
+                <div class="gift-container" onclick="pindahKeGift()">
+                    <div class="gift-bow"></div>
+                    <div class="gift-lid"></div>
+                    <div class="gift-box-3d"></div>
+                    <div class="gift-text">Buka Kado 🎁</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="gift-page-section">
+            <h1>FRESH FLOWER FOR YOU 🌸</h1>
+            <p style="font-style: italic; color: #6c5ce7; font-weight: 500;">- by capaaaaa -</p>
+            
+            <div class="bouquet-wrapper">
+                <div class="leaf lf-1"></div><div class="leaf lf-2"></div>
+                <div class="aesthetic-flower fl-1">
+                    <div class="fl-petal fl-p1"></div><div class="fl-petal fl-p2"></div><div class="fl-petal fl-p3"></div><div class="fl-petal fl-p4"></div><div class="fl-petal fl-p5"></div><div class="fl-core"></div>
+                </div>
+                <div class="aesthetic-flower fl-2">
+                    <div class="fl-petal fl-p1"></div><div class="fl-petal fl-p2"></div><div class="fl-petal fl-p3"></div><div class="fl-petal fl-p4"></div><div class="fl-petal fl-p5"></div><div class="fl-core"></div>
+                </div>
+                <div class="aesthetic-flower fl-3">
+                    <div class="fl-petal fl-p1"></div><div class="fl-petal fl-p2"></div><div class="fl-petal fl-p3"></div><div class="fl-petal fl-p4"></div><div class="fl-petal fl-p5"></div><div class="fl-core"></div>
+                </div>
+                <div class="aesthetic-flower fl-4">
+                    <div class="fl-petal fl-p1"></div><div class="fl-petal fl-p2"></div><div class="fl-petal fl-p3"></div><div class="fl-petal fl-p4"></div><div class="fl-petal fl-p5"></div><div class="fl-core"></div>
+                </div>
+                <div class="aesthetic-flower fl-5">
+                    <div class="fl-petal fl-p1"></div><div class="fl-petal fl-p2"></div><div class="fl-petal fl-p3"></div><div class="fl-petal fl-p4"></div><div class="fl-petal fl-p5"></div><div class="fl-core"></div>
+                </div>
+                <div class="vase"></div>
+                <div class="flower-stems"></div>
+            </div>
+            
+            <div class="ucapan" style="text-align: center; font-weight: 600; margin-top: 20px; color: #444;">
+                Buket bunga digital ini sengaja aku bikin khusus buat nemenin ucapan kemarin. Karena kalau cuma kata-kata aja rasanya kurang afdol kalo gaada bunganya, hehe. <br><br>
+                Bunga ini spesial karena gak bakal pernah layu dan bakal selalu mekar di web ini, sama kayak rasa sayang dan kagum aku ke kamu yang gak bakal pernah berkurang. Semoga buket bunga kecil ini bisa bikin kamu senyum hari ini ya! ✨
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        var musik = document.getElementById('lagu');
+
+        function mulaiWeb() {
+            musik.play();
+            document.getElementById('welcome-screen').style.opacity = '0';
+            setTimeout(() => { document.getElementById('welcome-screen').style.visibility = 'hidden'; }, 800);
+        }
+
+        function pindahKeGift() {
+            document.getElementById('open-page-section').style.display = 'none';
+            
+            var giftPage = document.getElementById('gift-page-section');
+            giftPage.style.display = 'block';
+            setTimeout(() => { giftPage.style.opacity = '1'; }, 50);
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            buatKelopakGugur();
+        }
+
+        function buatKelopakGugur() {
+            for (let i = 0; i < 25; i++) {
+                let petal = document.createElement('div');
+                petal.classList.add('petal-fall');
+                petal.style.left = Math.random() * window.innerWidth + 'px';
+                petal.style.width = Math.random() * 15 + 10 + 'px';
+                petal.style.height = Math.random() * 15 + 10 + 'px';
+                petal.style.animationDuration = Math.random() * 3 + 4 + 's';
+                petal.style.animationDelay = Math.random() * 5 + 's';
+                document.body.appendChild(petal);
+            }
+        }
+    </script>
+</body>
+</html>

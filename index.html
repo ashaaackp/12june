@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halo Bos!</title>
+    <style>
+        /* Reset & Base Style */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* Background Sky Blue dengan Gradasi */
+            background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 3rem;
+            text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.15);
+            margin-bottom: 50px;
+            z-index: 10;
+            letter-spacing: 2px;
+            animation: floatText 3s ease-in-out infinite alternate;
+        }
+
+        /* --- MATAHARI --- */
+        .sun {
+            position: absolute;
+            top: 50px;
+            right: 80px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #fffa73 0%, #ffcc00 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 40px #ffcc00;
+            z-index: 1;
+            animation: pulseSun 4s ease-in-out infinite alternate;
+        }
+
+        /* --- ANIMASI AWAN BERGERAK --- */
+        .cloud-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .cloud {
+            position: absolute;
+            background: #ffffff;
+            border-radius: 100px;
+            opacity: 0.85;
+            filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.05));
+        }
+
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background: #ffffff;
+            border-radius: 50%;
+        }
+
+        /* Bentuk Awan */
+        .cloud { width: 150px; height: 50px; }
+        .cloud::before { width: 70px; height: 70px; top: -35px; left: 20px; }
+        .cloud::after { width: 50px; height: 50px; top: -25px; right: 20px; }
+
+        /* Posisi & Kecepatan Awan */
+        .c1 { top: 15%; animation: moveCloud 25s linear infinite; transform: scale(1.2); }
+        .c2 { top: 35%; animation: moveCloud 18s linear infinite reverse; transform: scale(0.8); opacity: 0.6; }
+        .c3 { top: 60%; animation: moveCloud 30s linear infinite; transform: scale(1); opacity: 0.7; }
+
+        /* --- TOMBOL KADO (GIFBOX) --- */
+        .gift-container {
+            position: relative;
+            z-index: 10;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        /* Efek Hover Kado */
+        .gift-container:hover {
+            transform: scale(1.15);
+            animation: shakeBox 0.5s ease infinite;
+        }
+
+        /* Kotak Kado */
+        .gift-box {
+            width: 100px;
+            height: 90px;
+            background-color: #ff4757; /* Warna utama kado (merah) */
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        /* Tutup Kado */
+        .gift-box::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: -5px;
+            width: 110px;
+            height: 20px;
+            background-color: #ff6b81;
+            border-radius: 4px;
+            box-shadow: 0 4px 5px rgba(0,0,0,0.1);
+            z-index: 5;
+        }
+
+        /* Pita Vertikal */
+        .ribbon-v {
+            position: absolute;
+            top: -12px;
+            left: 42px;
+            width: 16px;
+            height: 102px;
+            background-color: #eccc68; /* Warna pita (emas) */
+            z-index: 4;
+        }
+
+        /* Pita Horizontal */
+        .ribbon-h {
+            position: absolute;
+            top: 30px;
+            left: 0;
+            width: 100px;
+            height: 16px;
+            background-color: #eccc68;
+            z-index: 3;
+        }
+
+        /* Pita Ikatan Atas (Simpul Kado) */
+        .bow {
+            position: absolute;
+            top: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            z-index: 6;
+        }
+
+        .bow::before, .bow::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border: 5px solid #eccc68;
+            border-radius: 50% 50% 0 50%;
+            transform: rotate(-45deg);
+            top: 0;
+        }
+
+        .bow::after {
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(45deg);
+            left: -14px;
+        }
+
+        /* Teks Petunjuk di Bawah Kado */
+        .gift-text {
+            text-align: center;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            text-shadow: 1px 2px 5px rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+
+
+        /* --- KEYFRAMES ANIMASI --- */
+        @keyframes moveCloud {
+            0% { left: -20%; }
+            100% { left: 120%; }
+        }
+
+        @keyframes pulseSun {
+            0% { box-shadow: 0 0 30px #ffcc00; transform: scale(1); }
+            100% { box-shadow: 0 0 50px #ffaa00; transform: scale(1.05); }
+        }
+
+        @keyframes floatText {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+
+        @keyframes shakeBox {
+            0% { transform: scale(1.15) rotate(0deg); }
+            25% { transform: scale(1.15) rotate(3deg); }
+            50% { transform: scale(1.15) rotate(0deg); }
+            75% { transform: scale(1.15) rotate(-3deg); }
+            100% { transform: scale(1.15) rotate(0deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sun"></div>
+
+    <div class="cloud-container">
+        <div class="cloud c1"></div>
+        <div class="cloud c2"></div>
+        <div class="cloud c3"></div>
+    </div>
+
+    <h1>HALO BOS!!</h1>
+
+    <a href="open.html" style="text-decoration: none;">
+        <div class="gift-container">
+            <div class="bow"></div>
+            <div class="gift-box">
+                <div class="ribbon-v"></div>
+                <div class="ribbon-h"></div>
+            </div>
+            <div class="gift-text">Buka Kado</div>
+        </div>
+    </a>
+
+</body>
+</html>
